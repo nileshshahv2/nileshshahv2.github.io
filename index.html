@@ -1,9 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="gu">
 <head>
-    <title>My Free GitHub Site</title>
+    <meta charset="UTF-8">
+    <title>Daily Gujarati Verse</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Gujarati Sangam MN', 'Shruti', 'Noto Sans Gujarati', sans-serif;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #verse-container {
+            font-size: 2.5rem;
+            line-height: 1.6;
+            max-width: 800px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: fadeIn 2s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, world! My site works!</h1>
+
+    <div id="verse-container">મુખપૃષ્ઠ લોડ થઈ રહ્યું છે... (Loading...)</div>
+
+    <script>
+        // 1. Fetch the text file containing the verses
+        fetch('verses.txt')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Could not find the verses.txt file.");
+                }
+                return response.text();
+            })
+            .then(text => {
+                // Split the text file by new lines and clean empty lines
+                const verses = text.split('\n')
+                                   .map(line => line.trim())
+                                   .filter(line => line.length > 0);
+
+                if (verses.length === 0) {
+                    document.getElementById('verse-container').innerText = "ટેક્સ્ટ ફાઇલમાં કોઈ પંક્તિઓ મળી નથી.";
+                    return;
+                }
+
+                // 2. Generate a pseudo-random index tied strictly to the calendar date
+                const today = new Date();
+                // Create a unique integer string for the day (e.g., 20260929)
+                const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+                
+                // Deterministic math formula to pick a line based on the date seed
+                const verseIndex = Math.abs(Math.sin(dateSeed) * 10000) % verses.length;
+                const dailyVerse = verses[Math.floor(verseIndex)];
+
+                // 3. Display the verse on screen
+                document.getElementById('verse-container').innerText = dailyVerse;
+            })
+            .catch(error => {
+                document.getElementById('verse-container').innerText = "ભૂલ: verses.txt ફાઇલ વેબ પેજની બાજુમાં જ હોવી જોઈએ.";
+                console.error(error);
+            });
+    </script>
 </body>
 </html>
