@@ -54,22 +54,30 @@
                     return;
                 }
 
-                // 2. Generate a pseudo-random index tied strictly to the calendar date
-                const today = new Date();
-                // Create a unique integer string for the day (e.g., 20260929)
-                const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+                // 2. Retrieve the last stored index from the browser's localStorage
+                let storedIndex = localStorage.getItem('currentVerseIndex');
                 
-                // Deterministic math formula to pick a line based on the date seed
-                const verseIndex = Math.abs(Math.sin(dateSeed) * 10000) % verses.length;
-                const dailyVerse = verses[Math.floor(verseIndex)];
+                // If it doesn't exist yet, start at 0. Otherwise, parse it to an integer.
+                let currentIndex = storedIndex ? parseInt(storedIndex, 10) : 0;
 
-                // 3. Display the verse on screen
-                document.getElementById('verse-container').innerText = dailyVerse;
+                // Safety check: If the index is out of bounds (e.g., you deleted lines in verses.txt), reset to 0
+                if (currentIndex >= verses.length || currentIndex < 0) {
+                    currentIndex = 0;
+                }
+
+                // 3. Display the current sequential verse on the screen
+                document.getElementById('verse-container').innerText = verses[currentIndex];
+
+                // 4. Calculate the next index and update localStorage for the next hit
+                // The '%' (modulo) operator automatically resets the index back to 0 when it hits the end
+                let nextIndex = (currentIndex + 1) % verses.length;
+                localStorage.setItem('currentVerseIndex', nextIndex);
             })
             .catch(error => {
-                document.getElementById('verse-container').innerText = "ભૂલ: verses.txt ફાઇલ વેબ પેજની બાજુમાં જ હોવી જોઈએ.";
+                document.getElementById('verse-container').innerText = "ભૂલ: verses.txt ફાઇલ લોડ કરવામાં સમસ્યા આવી છે.";
                 console.error(error);
             });
     </script>
+
 </body>
 </html>
