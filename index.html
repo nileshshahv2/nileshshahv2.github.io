@@ -1,83 +1,844 @@
 <!DOCTYPE html>
 <html lang="gu">
 <head>
-    <meta charset="UTF-8">
-    <title>Daily Gujarati Verse</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: 'Gujarati Sangam MN', 'Shruti', 'Noto Sans Gujarati', sans-serif;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        #verse-container {
-            font-size: 2.5rem;
-            line-height: 1.6;
-            max-width: 800px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            animation: fadeIn 2s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>આત્મસિદ્ધિ - દૈનિક ગાથા</title>
+  
+  <!-- Google Fonts for crisp Gujarati typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Gujarati:wght@400;600;700&family=Noto+Serif+Gujarati:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Local data script for instant loading & offline file:// support -->
+  <script src="./atmasiddhi_data.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #fdfbf7 0%, #f7f2ea 60%, #ece5d8 100%);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(212, 196, 172, 0.45);
+      --card-shadow: 0 15px 40px rgba(133, 107, 72, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+      --primary-accent: #8b4513;
+      --gold-accent: #c28b38;
+      --gold-soft: rgba(194, 139, 56, 0.15);
+      --text-title: #7c3f1d;
+      --text-badge: #925828;
+      --text-verse: #26211d;
+      --text-subtle: #7a7065;
+      --nav-btn-bg: rgba(255, 255, 255, 0.9);
+      --nav-btn-hover: #f3ece0;
+      --font-body: 'Anek Gujarati', system-ui, -apple-system, sans-serif;
+      --font-verse: 'Noto Serif Gujarati', Georgia, serif;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #1c1815 0%, #151210 60%, #0d0b0a 100%);
+      --card-bg: rgba(28, 25, 22, 0.9);
+      --card-border: rgba(139, 110, 78, 0.3);
+      --card-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+      --primary-accent: #e5a95d;
+      --gold-accent: #e5a95d;
+      --gold-soft: rgba(229, 169, 93, 0.12);
+      --text-title: #f0be79;
+      --text-badge: #d4a362;
+      --text-verse: #f5ede2;
+      --text-subtle: #a89a8c;
+      --nav-btn-bg: rgba(45, 40, 35, 0.85);
+      --nav-btn-hover: #3d352d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-gradient);
+      color: var(--text-verse);
+      padding: 16px;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* Container for widget / page */
+    .widget-container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Top bar for subtle controls */
+    .top-controls {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px 10px 8px;
+    }
+
+    .status-badge {
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+      background: var(--gold-soft);
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--gold-accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .icon-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-subtle);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      color: var(--primary-accent);
+      background: var(--nav-btn-hover);
+      transform: translateY(-1px);
+    }
+
+    .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Main Card */
+    .verse-card {
+      width: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 42px 32px 36px 32px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      touch-action: pan-y;
+      user-select: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    /* Subtle spiritual emblem */
+    .card-emblem {
+      margin-bottom: 14px;
+      color: var(--gold-accent);
+      opacity: 0.85;
+    }
+
+    /* 1. Title (Top line) */
+    .verse-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-title);
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    /* 2. Verse No (Second line) */
+    .verse-number {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-badge);
+      background: var(--gold-soft);
+      padding: 4px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(194, 139, 56, 0.25);
+      margin-bottom: 24px;
+      display: inline-block;
+      letter-spacing: 0.4px;
+    }
+
+    /* 3. Verse (Third line) */
+    .verse-content {
+      font-family: var(--font-verse);
+      font-size: 1.55rem;
+      font-weight: 600;
+      line-height: 1.95;
+      color: var(--text-verse);
+      white-space: pre-line;
+      text-align: center;
+      width: 100%;
+      word-break: break-word;
+      transition: opacity 0.2s ease;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Navigation Carousel Controls */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--card-border);
+    }
+
+    .nav-arrow {
+      background: var(--nav-btn-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-title);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-arrow:hover {
+      background: var(--nav-btn-hover);
+      color: var(--gold-accent);
+      transform: scale(1.08);
+    }
+
+    .nav-arrow:active {
+      transform: scale(0.95);
+    }
+
+    .nav-arrow svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .index-indicator {
+      font-size: 0.9rem;
+      color: var(--text-subtle);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: #2b2520;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 25px;
+      font-size: 0.88rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 9999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Settings Modal / Drawer */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .settings-dialog {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.open .settings-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .dialog-header h3 {
+      font-size: 1.25rem;
+      color: var(--text-title);
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 50%;
+    }
+
+    .setting-group {
+      margin-bottom: 20px;
+    }
+
+    .setting-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-title);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .options-grid.three-col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .option-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-verse);
+      padding: 9px 10px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background: var(--nav-btn-hover);
+    }
+
+    .option-btn.active {
+      background: var(--gold-accent);
+      color: #fff;
+      border-color: var(--gold-accent);
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(194, 139, 56, 0.3);
+    }
+
+    /* Responsive scaling for widgets & mobile screens */
+    @media (max-width: 540px) {
+      body {
+        padding: 12px;
+      }
+      .verse-card {
+        padding: 32px 20px 24px 20px;
+        border-radius: 20px;
+      }
+      .verse-title {
+        font-size: 1.5rem;
+      }
+      .verse-number {
+        font-size: 0.95rem;
+        padding: 3px 14px;
+        margin-bottom: 18px;
+      }
+      .verse-content {
+        font-size: 1.35rem;
+        line-height: 1.85;
+        min-height: 95px;
+      }
+      .carousel-controls {
+        margin-top: 24px;
+        padding-top: 16px;
+      }
+      .nav-arrow {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    /* Small widget view (e.g. iframe 350px wide) */
+    @media (max-height: 450px) {
+      .verse-card {
+        padding: 20px 24px;
+      }
+      .verse-content {
+        min-height: auto;
+      }
+      .carousel-controls {
+        margin-top: 16px;
+        padding-top: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="verse-container">મુખપૃષ્ઠ લોડ થઈ રહ્યું છે... (Loading...)</div>
+  <div class="widget-container">
+    
+    <!-- Top control bar -->
+    <div class="top-controls">
+      <div class="status-badge" id="timingStatusBadge">
+        <span class="status-dot"></span>
+        <span id="timingStatusText">દૈનિક દર્શન</span>
+      </div>
+      
+      <div class="icon-btn-group">
+        <!-- Copy button -->
+        <button class="icon-btn" id="copyBtn" title="ગાથા કૉપિ કરો (Copy Verse)" aria-label="Copy verse">
+          <svg viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
 
-    <script>
-        // 1. Fetch the text file containing the verses
-        fetch('verses.txt')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Could not find the verses.txt file.");
-                }
-                return response.text();
-            })
-            .then(text => {
-                // Split the text file by new lines and clean empty lines
-                const verses = text.split('\n')
-                                   .map(line => line.trim())
-                                   .filter(line => line.length > 0);
+        <!-- Theme toggle -->
+        <button class="icon-btn" id="themeBtn" title="થીમ બદલો (Toggle Theme)" aria-label="Toggle theme">
+          <svg id="themeIconSun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" style="display:none;" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
 
-                if (verses.length === 0) {
-                    document.getElementById('verse-container').innerText = "ટેક્સ્ટ ફાઇલમાં કોઈ પંક્તિઓ મળી નથી.";
-                    return;
-                }
+        <!-- Settings button -->
+        <button class="icon-btn" id="settingsBtn" title="સેટિંગ્સ (Settings)" aria-label="Open settings">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
 
-                // 2. Retrieve the last stored index from the browser's localStorage
-                let storedIndex = localStorage.getItem('currentVerseIndex');
-                
-                // If it doesn't exist yet, start at 0. Otherwise, parse it to an integer.
-                let currentIndex = storedIndex ? parseInt(storedIndex, 10) : 0;
+    <!-- Main Card -->
+    <div class="verse-card" id="verseCard">
+      <!-- Decorative Lotus / Spiritual Motif -->
+      <div class="card-emblem">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C12 2 9 7 9 10C9 12.21 10.79 14 13 14C15.21 14 17 12.21 17 10C17 7 12 2 12 2ZM12 4.5C13.5 7 15 9.5 15 10C15 11.1 14.1 12 13 12C11.9 12 11 11.1 11 10C11 9.5 12.5 7 12 4.5ZM7.5 10C6.5 10 5.5 10.5 5 11.5C4 13.5 6 16.5 9 17C7.5 16 7 14 7.5 10ZM16.5 10C17 14 16.5 16 15 17C18 16.5 20 13.5 19 11.5C18.5 10.5 17.5 10 16.5 10ZM12 15C9.5 15 5 16.5 4 19C4 20 5 21 7 21C9.5 21 11 19.5 12 18.5C13 19.5 14.5 21 17 21C19 21 20 20 20 19C19 16.5 14.5 15 12 15Z"/>
+        </svg>
+      </div>
 
-                // Safety check: If the index is out of bounds (e.g., you deleted lines in verses.txt), reset to 0
-                if (currentIndex >= verses.length || currentIndex < 0) {
-                    currentIndex = 0;
-                }
+      <!-- Field 1: Title on the top -->
+      <h1 class="verse-title" id="verseTitle">આત્મસિદ્ધિ</h1>
 
-                // 3. Display the current sequential verse on the screen
-                document.getElementById('verse-container').innerText = verses[currentIndex];
+      <!-- Field 2: Second line is verse_no -->
+      <div class="verse-number" id="verseNumber">ગાથા ૧</div>
 
-                // 4. Calculate the next index and update localStorage for the next hit
-                // The '%' (modulo) operator automatically resets the index back to 0 when it hits the end
-                let nextIndex = (currentIndex + 1) % verses.length;
-                localStorage.setItem('currentVerseIndex', nextIndex);
-            })
-            .catch(error => {
-                document.getElementById('verse-container').innerText = "ભૂલ: verses.txt ફાઇલ લોડ કરવામાં સમસ્યા આવી છે.";
-                console.error(error);
-            });
-    </script>
+      <!-- Field 3: Third line is verse -->
+      <div class="verse-content" id="verseContent">લોડ થઈ રહ્યું છે...</div>
 
+      <!-- Carousel navigation controls -->
+      <div class="carousel-controls">
+        <button class="nav-arrow" id="prevBtn" title="પાછલી ગાથા (Previous Verse)" aria-label="Previous verse">
+          <svg viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="index-indicator" id="indexIndicator">૧ / ૧૪૨</div>
+
+        <button class="nav-arrow" id="nextBtn" title="આગલી ગાથા (Next Verse)" aria-label="Next verse">
+          <svg viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Settings Dialog Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="settings-dialog">
+      <div class="dialog-header">
+        <h3>સેટિંગ્સ (Options)</h3>
+        <button class="close-btn" id="closeSettingsBtn" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <!-- Order Selection: Sequential vs Shuffle -->
+      <div class="setting-group">
+        <label class="setting-label">ક્રમ પસંદગી (Order Mode)</label>
+        <div class="options-grid">
+          <button class="option-btn active" data-order="sequential" id="btnOrderSequential">ક્રમ અનુસાર (Sequential)</button>
+          <button class="option-btn" data-order="shuffle" id="btnOrderShuffle">યાદૃચ્છિક (Shuffle)</button>
+        </div>
+      </div>
+
+      <!-- Timing Option: Daily, Hourly, Every Refresh -->
+      <div class="setting-group">
+        <label class="setting-label">બદલવાનો સમય (Refresh Timing)</label>
+        <div class="options-grid three-col">
+          <button class="option-btn active" data-timing="daily" id="btnTimingDaily">દૈનિક (Daily)</button>
+          <button class="option-btn" data-timing="hourly" id="btnTimingHourly">કલાકે (Hourly)</button>
+          <button class="option-btn" data-timing="refresh" id="btnTimingRefresh">દર વખતે (Refresh)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">ગાથા કૉપિ થઈ ગઈ છે!</div>
+
+  <script>
+    // State & Configuration
+    let verses = [];
+    let currentIndex = 0;
+    let config = {
+      order: 'sequential', // 'sequential' | 'shuffle'
+      timing: 'daily',     // 'daily' | 'hourly' | 'refresh'
+      theme: 'light',      // 'light' | 'dark'
+      lastVisitTime: 0,
+      refreshCount: 0
+    };
+
+    const GUJARATI_DIGITS = ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯'];
+
+    function toGujaratiDigits(num) {
+      return num.toString().split('').map(d => GUJARATI_DIGITS[parseInt(d, 10)] || d).join('');
+    }
+
+    // Pseudo-random deterministic generator for consistent shuffle
+    function pseudoRandomSeed(seed) {
+      let x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    }
+
+    // Load persisted settings
+    function loadSettings() {
+      const savedConfig = localStorage.getItem('vachan_carousel_config');
+      if (savedConfig) {
+        try {
+          config = Object.assign(config, JSON.parse(savedConfig));
+        } catch (e) {
+          console.error('Failed to parse saved config', e);
+        }
+      }
+      applyTheme(config.theme);
+      updateSettingsUI();
+    }
+
+    function saveSettings() {
+      localStorage.setItem('vachan_carousel_config', JSON.stringify(config));
+    }
+
+    function applyTheme(theme) {
+      config.theme = theme;
+      if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeIconSun').style.display = 'none';
+        document.getElementById('themeIconMoon').style.display = 'block';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('themeIconSun').style.display = 'block';
+        document.getElementById('themeIconMoon').style.display = 'none';
+      }
+      saveSettings();
+    }
+
+    function updateSettingsUI() {
+      // Order buttons
+      document.querySelectorAll('[data-order]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-order') === config.order);
+      });
+      // Timing buttons
+      document.querySelectorAll('[data-timing]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-timing') === config.timing);
+      });
+      // Badge text
+      const badgeText = document.getElementById('timingStatusText');
+      const orderGuj = config.order === 'shuffle' ? 'યાદૃચ્છિક' : 'ક્રમ અનુસાર';
+      if (config.timing === 'daily') {
+        badgeText.textContent = `દૈનિક ગાથા (${orderGuj})`;
+      } else if (config.timing === 'hourly') {
+        badgeText.textContent = `કલાકવાર ગાથા (${orderGuj})`;
+      } else {
+        badgeText.textContent = `નવી ગાથા (${orderGuj})`;
+      }
+    }
+
+    // Calculate initial index based on chosen timing & order
+    function calculateAutoIndex(total) {
+      if (total <= 0) return 0;
+
+      const now = new Date();
+      // Base reference date (epoch: Jan 1, 2024 UTC)
+      const baseEpoch = new Date('2024-01-01T00:00:00Z').getTime();
+      const currentMs = now.getTime();
+      
+      let step = 0;
+      if (config.timing === 'daily') {
+        // Number of local calendar days since base epoch
+        const msPerDay = 24 * 60 * 60 * 1000;
+        step = Math.floor((currentMs - baseEpoch) / msPerDay);
+      } else if (config.timing === 'hourly') {
+        // Number of hours since base epoch
+        const msPerHour = 60 * 60 * 1000;
+        step = Math.floor((currentMs - baseEpoch) / msPerHour);
+      } else if (config.timing === 'refresh') {
+        // Advance on every page reload
+        config.refreshCount = (config.refreshCount || 0) + 1;
+        saveSettings();
+        step = config.refreshCount;
+      }
+
+      if (config.order === 'shuffle') {
+        // Stable pseudo-random permutation based on the step
+        const randomVal = pseudoRandomSeed(step * 37 + 101);
+        return Math.floor(randomVal * total) % total;
+      } else {
+        // Sequential increment starting from first (index 0)
+        return ((step % total) + total) % total;
+      }
+    }
+
+    // Render verse with smooth animation
+    function renderVerse(index) {
+      if (!verses || verses.length === 0) return;
+      
+      currentIndex = ((index % verses.length) + verses.length) % verses.length;
+      const v = verses[currentIndex];
+
+      const card = document.getElementById('verseCard');
+      const contentEl = document.getElementById('verseContent');
+      const titleEl = document.getElementById('verseTitle');
+      const numberEl = document.getElementById('verseNumber');
+      const indicatorEl = document.getElementById('indexIndicator');
+
+      // Subtle fade transition
+      contentEl.style.opacity = '0';
+      numberEl.style.opacity = '0';
+
+      setTimeout(() => {
+        titleEl.textContent = v.title || 'આત્મસિદ્ધિ';
+        numberEl.textContent = v.verse_no || `ગાથા ${toGujaratiDigits(currentIndex + 1)}`;
+        contentEl.textContent = v.verse || '';
+        indicatorEl.textContent = `${toGujaratiDigits(currentIndex + 1)} / ${toGujaratiDigits(verses.length)}`;
+
+        contentEl.style.opacity = '1';
+        numberEl.style.opacity = '1';
+      }, 150);
+    }
+
+    // Toast helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // Fetch and initialize verses
+    async function init() {
+      loadSettings();
+
+      if (window.ATMASIDDHI_DATA && Array.isArray(window.ATMASIDDHI_DATA)) {
+        verses = window.ATMASIDDHI_DATA;
+      } else {
+        try {
+          const response = await fetch('./atmasiddhi.json');
+          if (!response.ok) throw new Error('Network response not ok');
+          verses = await response.json();
+        } catch (err) {
+          console.warn('Could not load atmasiddhi.json', err);
+          document.getElementById('verseContent').textContent = 'ગાથા લોડ કરવામાં સમસ્યા આવી. કૃપા કરીને તપાસો કે atmasiddhi.json ઉપલબ્ધ છે.';
+          return;
+        }
+      }
+
+      currentIndex = calculateAutoIndex(verses.length);
+      renderVerse(currentIndex);
+      setupEventListeners();
+    }
+
+    function setupEventListeners() {
+      // Prev / Next Buttons
+      document.getElementById('prevBtn').addEventListener('click', () => {
+        renderVerse(currentIndex - 1);
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        renderVerse(currentIndex + 1);
+      });
+
+      // Keyboard arrow keys navigation
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') renderVerse(currentIndex - 1);
+        if (e.key === 'ArrowRight') renderVerse(currentIndex + 1);
+      });
+
+      // Touch Swipe Support for Mobile & Widgets
+      let touchStartX = 0;
+      let touchEndX = 0;
+      const card = document.getElementById('verseCard');
+
+      card.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      card.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      }, { passive: true });
+
+      function handleSwipe() {
+        const diff = touchEndX - touchStartX;
+        if (Math.abs(diff) > 40) {
+          if (diff > 0) {
+            renderVerse(currentIndex - 1); // Swipe right -> Previous
+          } else {
+            renderVerse(currentIndex + 1); // Swipe left -> Next
+          }
+        }
+      }
+
+      // Copy Verse Button
+      document.getElementById('copyBtn').addEventListener('click', () => {
+        if (!verses[currentIndex]) return;
+        const v = verses[currentIndex];
+        const shareText = `${v.title}\n${v.verse_no}\n\n${v.verse}`;
+        navigator.clipboard.writeText(shareText).then(() => {
+          showToast('ગાથા કૉપિ થઈ ગઈ છે!');
+        }).catch(() => {
+          showToast('કૉપિ કરવામાં નિષ્ફળ.');
+        });
+      });
+
+      // Theme Button Toggle
+      document.getElementById('themeBtn').addEventListener('click', () => {
+        applyTheme(config.theme === 'dark' ? 'light' : 'dark');
+      });
+
+      // Settings Modal Open / Close
+      const modal = document.getElementById('settingsModal');
+      document.getElementById('settingsBtn').addEventListener('click', () => {
+        modal.classList.add('open');
+      });
+
+      document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+        modal.classList.remove('open');
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('open');
+      });
+
+      // Order Buttons
+      document.querySelectorAll('[data-order]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          config.order = btn.getAttribute('data-order');
+          saveSettings();
+          updateSettingsUI();
+          currentIndex = calculateAutoIndex(verses.length);
+          renderVerse(currentIndex);
+          showToast(`ક્રમ: ${btn.textContent.trim()}`);
+        });
+      });
+
+      // Timing Buttons
+      document.querySelectorAll('[data-timing]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          config.timing = btn.getAttribute('data-timing');
+          saveSettings();
+          updateSettingsUI();
+          currentIndex = calculateAutoIndex(verses.length);
+          renderVerse(currentIndex);
+          showToast(`સમય: ${btn.textContent.trim()}`);
+        });
+      });
+    }
+
+    // Launch when DOM is ready
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>
